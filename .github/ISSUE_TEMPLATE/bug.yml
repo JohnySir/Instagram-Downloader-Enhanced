@@ -19,7 +19,7 @@ body:
     attributes:
       label: Extension version
       description: Please share the version of the extension.
-      placeholder: v5.1.12.
+      placeholder: Examole: v5.1.12.
     validations:
       required: true
       
