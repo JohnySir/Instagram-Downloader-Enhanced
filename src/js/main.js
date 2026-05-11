@@ -121,7 +121,7 @@ const appState = Object.freeze((() => {
                     </p>
                 </div>
             </div>
-            <button class="download-button">Download</button>`));
+            <button title="Shift+D" class="download-button">Download</button>`));
     }
     function handleEvents() {
         const ESC_BUTTON = document.querySelector('.esc-button');
