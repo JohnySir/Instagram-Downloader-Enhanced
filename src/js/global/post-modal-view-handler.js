@@ -5,11 +5,12 @@
  * So I wrote this to cache post id when user view post to reduce one api call.
  * 
  */
-window.addEventListener('pathChange', (e) => {
+navigation.addEventListener('navigate', (e) => {
     /**
      * Article element only avaiable right away when view post from /explore or from profile page
      * Otherwise Instagram wait until api call success and render it.
     */
+    const url = new URL(e.destination.url);
     let article = document.querySelector('article[role="presentation"]');
 
     const observer = new MutationObserver(() => {
@@ -39,8 +40,8 @@ window.addEventListener('pathChange', (e) => {
     function stopObserve() {
         observer.disconnect();
     }
-    
-    if (e.detail.currentPath.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
+
+    if (url.pathname.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
         startObserve();
     }
     else {

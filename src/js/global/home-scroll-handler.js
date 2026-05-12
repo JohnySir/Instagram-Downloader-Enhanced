@@ -53,8 +53,9 @@
         observer.disconnect();
         window.removeEventListener('scroll', homeScrollHandler);
     }
-    window.addEventListener('pathChange', (e) => {
-        if (e.detail.currentPath === '/') startObserve();
+    navigation.addEventListener('navigate', (e) => {
+        const url = new URL(e.destination.url);
+        if (url.pathname.startsWith === '/') startObserve();
         else stopObserve();
     });
     if (window.location.pathname === '/') startObserve();

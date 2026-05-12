@@ -284,14 +284,15 @@ const appState = Object.freeze((() => {
                 media.src = media.src;
             });
         });
-        window.addEventListener('pathChange', (e) => {
-            const currentPath = e.detail.currentPath;
+        navigation.addEventListener('navigate', (e) => {
+            const currentPath = new URL(e.destination.url).pathname;
+            const previousPath = window.location.pathname;
             // Hide/Show Download button when user navigate
             if (currentPath.startsWith('/direct')) {
                 hideExtension();
             }
             // Have to check old path because Instagram now show message button on almost every page.
-            else if (e.detail.previousPath.startsWith('/direct')) {
+            else if (previousPath.startsWith('/direct')) {
                 showExtension();
             }
 
@@ -313,7 +314,7 @@ const appState = Object.freeze((() => {
             }
         });
         window.addEventListener('postView', e => {
-            if (appCache.postIdInfoCache.has(e.detail.id)) return;
+            if (appCache.postIdInfoCache.has(e.detail.code)) return;
             // Check valid shortcode
             if (e.detail.code.startsWith(convertToShortcode(e.detail.id))) {
                 appCache.postIdInfoCache.set(e.detail.code, e.detail.id);

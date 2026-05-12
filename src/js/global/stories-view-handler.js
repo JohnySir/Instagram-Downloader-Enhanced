@@ -1,5 +1,6 @@
-window.addEventListener('pathChange', (e) => {
-    if (e.detail.currentPath.match(/\/(stories)\/(.*?)\/(\d*)(\/?)/)) {
+navigation.addEventListener('navigate', (e) => {
+    const url = new URL(e.destination.url);
+    if (url.pathname.match(/\/(stories)\/(.*?)\/(\d*)(\/?)/)) {
         /**
          * Why setTimeout needed?
          * Because Instagram will load ads before stories and make userId and username mismatch

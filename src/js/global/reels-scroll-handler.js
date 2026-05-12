@@ -1,6 +1,7 @@
-window.addEventListener('pathChange', e => {
+navigation.addEventListener('navigate', e => {
     // Scroll on /reels/:code page like tiktok
-    const match = e.detail.currentPath.match(/\/(reels)\/([A-Za-z0-9_-]*)(\/?)/);
+    const url = new URL(e.destination.url);
+    const match = url.pathname.match(/\/(reels)\/([A-Za-z0-9_-]*)(\/?)/);
     if (match) {
         const reels = document.querySelectorAll('main>div>div:nth-child(odd)');
         reels.forEach(element => {
