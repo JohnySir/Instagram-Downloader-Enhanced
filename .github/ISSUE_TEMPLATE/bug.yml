@@ -1,37 +1,37 @@
 name: 🔴 Bug
 description: Report a bug or issue you encountered while using the extension.
-title: "[Bug] "
+title: '[Bug] '
 labels:
-  - bug
+    - bug
 body:
-  - type: textarea
-    id: description
-    attributes:
-      label: Describe the bug
-      description: Please provide a detailed description of the bug.
-      placeholder: |
-        Describe the bug in detail, including steps to reproduce it if possible.
-    validations:
-      required: true
+    - type: textarea
+      id: description
+      attributes:
+          label: Describe the bug
+          description: Please provide a detailed description of the bug.
+          placeholder: |
+              Describe the bug in detail, including steps to reproduce it if possible.
+      validations:
+          required: true
 
-  - type: input
-    id: verion
-    attributes:
-      label: Extension version
-      description: Please share the version of the extension.
-      placeholder: v5.1.12.
-    validations:
-      required: true
-      
-  - type: input
-    id: url
-    attributes:
-      label: URL
-      description: If applicable, paste the URL of the Post Photo, Story or Reel you were trying to download.
-      placeholder: https://www.instagram.com/p/* , https://www.instagram.com/stories/* , https://www.instagram.com/reel/* , etc.
+    - type: input
+      id: verion
+      attributes:
+          label: Extension version
+          description: Please share the version of the extension.
+          placeholder: v5.1.12.
+      validations:
+          required: true
 
-  - type: textarea
-    id: additional-context
-    attributes:
-      label: Additional context or information
-      description: Add any other context or information about the bug here.
+    - type: input
+      id: url
+      attributes:
+          label: URL
+          description: If applicable, paste the URL of the Post Photo, Story or Reel you were trying to download.
+          placeholder: https://www.instagram.com/p/* , https://www.instagram.com/stories/* , https://www.instagram.com/reel/* , etc.
+
+    - type: textarea
+      id: additional-context
+      attributes:
+          label: Additional context or information
+          description: Add any other context or information about the bug here.

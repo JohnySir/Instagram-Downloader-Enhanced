@@ -1,25 +1,25 @@
 name: ✨ Feature Request
 description: Suggest an idea or enhancement for this extension.
-title: "[Feature] "
+title: '[Feature] '
 labels:
-  - enhancement
+    - enhancement
 body:
-  - type: textarea
-    id: feature-description
-    attributes:
-      label: Describe the feature
-      description: Describe what you would like us to add and how it will benefit users.
-      placeholder: |
-          Describe the feature in detail, including how it works and why you think it's beneficial.
+    - type: textarea
+      id: feature-description
+      attributes:
+          label: Describe the feature
+          description: Describe what you would like us to add and how it will benefit users.
+          placeholder: |
+              Describe the feature in detail, including how it works and why you think it's beneficial.
 
-          Optional: What problem does this solve? What benefits will users gain?
-    validations:
-      required: true
+              Optional: What problem does this solve? What benefits will users gain?
+      validations:
+          required: true
 
-  - type: textarea
-    id: mockup
-    attributes:
-      label: Mockup / Visual Representation(Optional)
-      description: Provide a mockup or visual reference if available.
-      placeholder: |
-        Drag images here or paste links.
+    - type: textarea
+      id: mockup
+      attributes:
+          label: Mockup / Visual Representation(Optional)
+          description: Provide a mockup or visual reference if available.
+          placeholder: |
+              Drag images here or paste links.

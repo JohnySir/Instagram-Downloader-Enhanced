@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 
 contact_links:
-  - name: 🗣 GitHub Discussions
-    url: https://github.com/HOAIAN2/Instagram-Downloader/discussions
-    about: >
-      Use Discussions for general questions, usage help, or topics that are not clearly bugs or feature requests.
+    - name: 🗣 GitHub Discussions
+      url: https://github.com/HOAIAN2/Instagram-Downloader/discussions
+      about: >
+          Use Discussions for general questions, usage help, or topics that are not clearly bugs or feature requests.

@@ -18,87 +18,101 @@ const APP_NAME = `${chrome.runtime.getManifest().name} v${chrome.runtime.getMani
 const appCache = Object.freeze({
     /**
      * Cache user id, reduce one api call to get id from username
-     * 
+     *
      * username => id
      */
     userIdsCache: new Map(),
     /**
      * Cache post id, reduce one api call to get post id from shortcode.
-     * 
+     *
      * Only for private profile, check out  post-modal-view-handler.js
-     * 
+     *
      * shortcode => post_id
      */
     postIdInfoCache: new Map(),
 });
 
-const appState = Object.freeze((() => {
-    let currentDisplay = '';
-    const current = {
-        shortcode: '',
-        username: '',
-        highlights: '',
-    };
-    const previous = {
-        shortcode: '',
-        username: '',
-        highlights: '',
-    };
-    window.addEventListener('shortcodeChange', e => {
-        current.shortcode = e.detail.code;
-    });
-    return {
-        get currentDisplay() { return currentDisplay; },
-        set currentDisplay(value) { if (['post', 'stories', 'highlights'].includes(value)) currentDisplay = value; },
-        current: Object.freeze({
-            get shortcode() { return current.shortcode; },
-            set shortcode(value) {
-                current.shortcode = value;
-                downloadPostPhotos().then(data => {
-                    renderMedia(data);
-                    currentDisplay = 'post';
+const appState = Object.freeze(
+    (() => {
+        let currentDisplay = '';
+        const current = {
+            shortcode: '',
+            username: '',
+            highlights: '',
+        };
+        const previous = {
+            shortcode: '',
+            username: '',
+            highlights: '',
+        };
+        window.addEventListener('shortcodeChange', (e) => {
+            current.shortcode = e.detail.code;
+        });
+        return {
+            get currentDisplay() {
+                return currentDisplay;
+            },
+            set currentDisplay(value) {
+                if (['post', 'stories', 'highlights'].includes(value)) currentDisplay = value;
+            },
+            current: Object.freeze({
+                get shortcode() {
+                    return current.shortcode;
+                },
+                set shortcode(value) {
+                    current.shortcode = value;
+                    downloadPostPhotos().then((data) => {
+                        renderMedia(data);
+                        currentDisplay = 'post';
+                    });
+                },
+                get username() {
+                    return current.username;
+                },
+                set username(value) {
+                    current.username = value;
+                    downloadStoryPhotos('stories').then((data) => {
+                        renderMedia(data);
+                        currentDisplay = 'stories';
+                    });
+                },
+                get highlights() {
+                    return current.highlights;
+                },
+                set highlights(value) {
+                    current.highlights = value;
+                    downloadStoryPhotos('highlights').then((data) => {
+                        renderMedia(data);
+                        currentDisplay = 'hightlights';
+                    });
+                },
+            }),
+            setCurrentShortcode() {
+                const page = window.location.pathname.match(IG_POST_REGEX);
+                if (page) current.shortcode = page[2];
+            },
+            setCurrentUsername() {
+                const page = window.location.pathname.match(IG_STORY_REGEX);
+                if (page && page[2] !== 'highlights') current.username = page[2];
+            },
+            setCurrentHightlightsId() {
+                const page = window.location.pathname.match(IG_HIGHLIGHT_REGEX);
+                if (page) current.highlights = page[3];
+            },
+            setPreviousValues() {
+                Object.keys(current).forEach((key) => {
+                    previous[key] = current[key];
                 });
             },
-            get username() { return current.username; },
-            set username(value) {
-                current.username = value;
-                downloadStoryPhotos('stories').then(data => {
-                    renderMedia(data);
-                    currentDisplay = 'stories';
-                });
+            getFieldChange() {
+                if (current.highlights !== previous.highlights) return 'highlights';
+                if (current.username !== previous.username) return 'stories';
+                if (current.shortcode !== previous.shortcode) return 'post';
+                return 'none';
             },
-            get highlights() { return current.highlights; },
-            set highlights(value) {
-                current.highlights = value;
-                downloadStoryPhotos('highlights').then(data => {
-                    renderMedia(data);
-                    currentDisplay = 'hightlights';
-                });
-            },
-        }),
-        setCurrentShortcode() {
-            const page = window.location.pathname.match(IG_POST_REGEX);
-            if (page) current.shortcode = page[2];
-        },
-        setCurrentUsername() {
-            const page = window.location.pathname.match(IG_STORY_REGEX);
-            if (page && page[2] !== 'highlights') current.username = page[2];
-        },
-        setCurrentHightlightsId() {
-            const page = window.location.pathname.match(IG_HIGHLIGHT_REGEX);
-            if (page) current.highlights = page[3];
-        },
-        setPreviousValues() {
-            Object.keys(current).forEach(key => { previous[key] = current[key]; });
-        },
-        getFieldChange() {
-            if (current.highlights !== previous.highlights) return 'highlights';
-            if (current.username !== previous.username) return 'stories';
-            if (current.shortcode !== previous.shortcode) return 'post';
-            return 'none';
-        },
-    };
-})());
+        };
+    })(),
+);
 
 (() => {
     function createElement(htmlString) {
@@ -109,8 +123,9 @@ const appState = Object.freeze((() => {
         return fragment;
     }
     function initUI() {
-        document.body.appendChild(createElement(
-            `<div class="display-container hide">
+        document.body.appendChild(
+            createElement(
+                `<div class="display-container hide">
                 <div class="title-container">
                     <span title="${APP_NAME}">Media</span>
                     <button class="esc-button">&times</button>
@@ -121,7 +136,9 @@ const appState = Object.freeze((() => {
                     </p>
                 </div>
             </div>
-            <button title="Shift+D" class="download-button">Download</button>`));
+            <button title="Shift+D" class="download-button">Download</button>`,
+            ),
+        );
     }
     function handleEvents() {
         const ESC_BUTTON = document.querySelector('.esc-button');
@@ -133,21 +150,21 @@ const appState = Object.freeze((() => {
         const DOWNLOAD_EVENT_KEYS = ['D'];
         const SELECT_EVENT_KEYS = ['S', 's'];
         function setTheme() {
-            const isDarkMode = localStorage.getItem('igt') === null ?
-                window.matchMedia('(prefers-color-scheme: dark)').matches :
-                localStorage.getItem('igt') === 'dark';
+            const isDarkMode =
+                localStorage.getItem('igt') === null
+                    ? window.matchMedia('(prefers-color-scheme: dark)').matches
+                    : localStorage.getItem('igt') === 'dark';
             if (isDarkMode) {
                 DISPLAY_CONTAINER.classList.add('dark');
                 DISPLAY_CONTAINER.firstElementChild.classList.add('dark');
-            }
-            else {
+            } else {
                 DISPLAY_CONTAINER.classList.remove('dark');
                 DISPLAY_CONTAINER.firstElementChild.classList.remove('dark');
             }
         }
         function pauseVideo() {
             if (DISPLAY_CONTAINER.classList.contains('hide')) {
-                DISPLAY_CONTAINER.querySelectorAll('video').forEach(video => {
+                DISPLAY_CONTAINER.querySelectorAll('video').forEach((video) => {
                     video.pause();
                 });
             }
@@ -155,14 +172,13 @@ const appState = Object.freeze((() => {
         function toggleSelectMode() {
             if (TITLE_CONTAINER.classList.contains('multi-select')) {
                 TITLE_CONTAINER.title = 'Hold to select / deselect all';
-                DISPLAY_CONTAINER.querySelectorAll('.overlay').forEach(element => {
+                DISPLAY_CONTAINER.querySelectorAll('.overlay').forEach((element) => {
                     element.classList.add('show');
                 });
-            }
-            else {
+            } else {
                 TITLE_CONTAINER.textContent = 'Media';
                 TITLE_CONTAINER.title = APP_NAME;
-                DISPLAY_CONTAINER.querySelectorAll('.overlay').forEach(element => {
+                DISPLAY_CONTAINER.querySelectorAll('.overlay').forEach((element) => {
                     element.classList.remove('show');
                 });
             }
@@ -171,11 +187,14 @@ const appState = Object.freeze((() => {
             if (!TITLE_CONTAINER.classList.contains('multi-select')) return;
             const totalItem = Array.from(DISPLAY_CONTAINER.querySelectorAll('.overlay'));
             const totalItemChecked = Array.from(DISPLAY_CONTAINER.querySelectorAll('.overlay.checked'));
-            if (totalItemChecked.length !== totalItem.length) totalItem.forEach(item => {
-                if (!item.classList.contains('saved')) item.classList.add('checked');
-            });
+            if (totalItemChecked.length !== totalItem.length)
+                totalItem.forEach((item) => {
+                    if (!item.classList.contains('saved')) item.classList.add('checked');
+                });
             else {
-                totalItem.forEach(item => { item.classList.remove('checked'); });
+                totalItem.forEach((item) => {
+                    item.classList.remove('checked');
+                });
             }
         }
         function setSelectedMedia() {
@@ -204,23 +223,23 @@ const appState = Object.freeze((() => {
                 if (!chatTabsRootContent) {
                     return;
                 }
-                const tabChatWrapper = chatTabsRootContent.querySelector('[data-visualcompletion="ignore"]').childNodes[0];
+                const tabChatWrapper = chatTabsRootContent.querySelector('[data-visualcompletion="ignore"]')
+                    .childNodes[0];
                 if (tabChatWrapper.childNodes.length > 1) {
                     // This tab will show when you click on Message button
                     const actualTabChat = tabChatWrapper.lastChild;
                     // This tab will show when you view someone story and click on avatar on Message button
                     const singleTabChat = actualTabChat.querySelector('[aria-label]');
 
-                    if (actualTabChat.checkVisibility({ checkVisibilityCSS: true }) ||
+                    if (
+                        actualTabChat.checkVisibility({ checkVisibilityCSS: true }) ||
                         singleTabChat.checkVisibility({ checkVisibilityCSS: true })
                     ) {
                         hideExtension();
-                    }
-                    else {
+                    } else {
                         showExtension();
                     }
-                }
-                else {
+                } else {
                     showExtension();
                 }
             });
@@ -228,7 +247,7 @@ const appState = Object.freeze((() => {
             rootObserver.observe(reactRoot, {
                 // attributes: true,
                 childList: true,
-                subtree: true
+                subtree: true,
             });
         }
         const handleTheme = new MutationObserver(setTheme);
@@ -237,18 +256,20 @@ const appState = Object.freeze((() => {
         const handleSelectMedia = new MutationObserver(setSelectedMedia);
         handleTheme.observe(document.documentElement, {
             attributes: true,
-            attributeFilter: ['class']
+            attributeFilter: ['class'],
         });
         handleVideo.observe(DISPLAY_CONTAINER, {
             attributes: true,
-            attributeFilter: ['class']
+            attributeFilter: ['class'],
         });
         handleToggleSelectMode.observe(TITLE_CONTAINER, {
             attributes: true,
-            attributeFilter: ['class']
+            attributeFilter: ['class'],
         });
         handleSelectMedia.observe(DISPLAY_CONTAINER.querySelector('.media-container'), {
-            attributes: true, childList: true, subtree: true
+            attributes: true,
+            childList: true,
+            subtree: true,
         });
         ESC_BUTTON.addEventListener('click', () => {
             DISPLAY_CONTAINER.classList.add('hide');
@@ -270,17 +291,21 @@ const appState = Object.freeze((() => {
         });
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'hidden') {
-                DISPLAY_CONTAINER.querySelectorAll('video').forEach(video => {
+                DISPLAY_CONTAINER.querySelectorAll('video').forEach((video) => {
                     video.pause();
                 });
             }
         });
-        handleLongClick(TITLE_CONTAINER, () => {
-            TITLE_CONTAINER.classList.toggle('multi-select');
-        }, handleSelectAll);
+        handleLongClick(
+            TITLE_CONTAINER,
+            () => {
+                TITLE_CONTAINER.classList.toggle('multi-select');
+            },
+            handleSelectAll,
+        );
         DOWNLOAD_BUTTON.addEventListener('click', handleDownload);
         window.addEventListener('online', () => {
-            DISPLAY_CONTAINER.querySelectorAll('img , video').forEach(media => {
+            DISPLAY_CONTAINER.querySelectorAll('img , video').forEach((media) => {
                 media.src = media.src;
             });
         });
@@ -298,22 +323,22 @@ const appState = Object.freeze((() => {
 
             // Set z-index to Download button when navigate to downloadable url
             // Download button z-index unset by default to prevent overlay over other element
-            if (currentPath.match(IG_POST_REGEX) ||
+            if (
+                currentPath.match(IG_POST_REGEX) ||
                 currentPath.match(IG_STORY_REGEX) ||
                 currentPath.match(IG_HIGHLIGHT_REGEX)
             ) {
                 DOWNLOAD_BUTTON.setAttribute('style', 'z-index: 1000000;');
-            }
-            else {
+            } else {
                 DOWNLOAD_BUTTON.removeAttribute('style');
             }
         });
-        window.addEventListener('userLoad', e => {
+        window.addEventListener('userLoad', (e) => {
             if (!appCache.userIdsCache.has(e.detail.username)) {
                 appCache.userIdsCache.set(e.detail.username, e.detail.id);
             }
         });
-        window.addEventListener('postView', e => {
+        window.addEventListener('postView', (e) => {
             if (appCache.postIdInfoCache.has(e.detail.code)) return;
             // Check valid shortcode
             if (e.detail.code.startsWith(convertToShortcode(e.detail.id))) {
@@ -329,7 +354,7 @@ const appState = Object.freeze((() => {
         }
     }
     function run() {
-        document.querySelectorAll('.display-container, .download-button').forEach(node => {
+        document.querySelectorAll('.display-container, .download-button').forEach((node) => {
             node.remove();
         });
         initUI();

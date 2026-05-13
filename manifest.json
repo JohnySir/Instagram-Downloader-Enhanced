@@ -9,32 +9,18 @@
         "48": "icons/icon48.png",
         "128": "icons/icon128.png"
     },
-    "host_permissions": [
-        "https://www.instagram.com/*"
-    ],
+    "host_permissions": ["https://www.instagram.com/*"],
     "action": {
         "default_icon": "icons/icon128.png"
     },
     "content_scripts": [
         {
-            "matches": [
-                "https://www.instagram.com/*"
-            ],
-            "js": [
-                "src/js/utils.js",
-                "src/js/main.js",
-                "src/js/post.js",
-                "src/js/story.js",
-                "src/js/zip.js"
-            ],
-            "css": [
-                "src/style/style.css"
-            ]
+            "matches": ["https://www.instagram.com/*"],
+            "js": ["src/js/utils.js", "src/js/main.js", "src/js/post.js", "src/js/story.js", "src/js/zip.js"],
+            "css": ["src/style/style.css"]
         },
         {
-            "matches": [
-                "https://www.instagram.com/*"
-            ],
+            "matches": ["https://www.instagram.com/*"],
             "js": [
                 "src/js/global/utils.js",
                 "src/js/global/home-scroll-handler.js",

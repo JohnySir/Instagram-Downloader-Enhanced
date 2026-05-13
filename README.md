@@ -10,38 +10,38 @@ With regex and some `ReactFiber` magic, I'm able to know which post you wanna do
 
 This extension should work fine on the following browsers with `fetch()` API and Chromium base browser, tested Browser:
 
-* Google Chrome
-* MS Edge
-* FireFox
+- Google Chrome
+- MS Edge
+- FireFox
 
 ## Download and install
 
-* Download [latest version](https://github.com/HOAIAN2/Instagram-Downloader/releases) and extract to a folder
-* Enable Chrome extensions developer mode
-* Drag and drop extracted folder to `chrome://extensions/`
+- Download [latest version](https://github.com/HOAIAN2/Instagram-Downloader/releases) and extract to a folder
+- Enable Chrome extensions developer mode
+- Drag and drop extracted folder to `chrome://extensions/`
 
 ## Usage
 
-* Go to any `post`, `reels`, `stories`, etc. Then click `Download` button to fetch data.
+- Go to any `post`, `reels`, `stories`, etc. Then click `Download` button to fetch data.
 
-* Click on any photos/videos to save.
+- Click on any photos/videos to save.
 
-* Toggle multi select by click on `Photos` and select photos by click on them (or select all by click and hold on `Photos`). Then click on `Download` to save zip file.
+- Toggle multi select by click on `Photos` and select photos by click on them (or select all by click and hold on `Photos`). Then click on `Download` to save zip file.
 
-* If you scroll on the home page, this app will auto detect the post you wanna download so you don't have to click to comment section to open modal. Thanks to ReactFiber.
+- If you scroll on the home page, this app will auto detect the post you wanna download so you don't have to click to comment section to open modal. Thanks to ReactFiber.
 
 ## Features
 
-* Download posts ✔
-* Download reels ✔
-* Download latest stories ✔
-* Download highlight stories ✔
-* Support high resolution ✔
-* Support download zip file ✔
+- Download posts ✔
+- Download reels ✔
+- Download latest stories ✔
+- Download highlight stories ✔
+- Support high resolution ✔
+- Support download zip file ✔
 
 ## Customize
 
-You can modify anything you want except some constants start with "IG_" that definitely gonna break this extension.
+You can modify anything you want except some constants start with "IG\_" that definitely gonna break this extension.
 
 Edit Hide / Show Transition effects
 
@@ -58,17 +58,17 @@ Edit Hide / Show Transition effects
 
 Some keyboard shortcuts will not work if you use an external application for typing.
 
-* Download: `D`
-* Close: `esc` `C` `c`
-* Select all `S` `s`
-* Keyboard shortcut should work if you don't focus on special HTML Elements like `input` `textarea` or any element with `textbox` role (ex: comment, search, ...)
+- Download: `D`
+- Close: `esc` `C` `c`
+- Select all `S` `s`
+- Keyboard shortcut should work if you don't focus on special HTML Elements like `input` `textarea` or any element with `textbox` role (ex: comment, search, ...)
 
 ## Deprecated features
 
 These features was deprecated for some reason.
 
-* V5.1.0
-  * Set fallback download to latest post from some user.
+- V5.1.0
+    - Set fallback download to latest post from some user.
 
 ## Notes
 
