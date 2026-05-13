@@ -18,7 +18,7 @@ function calculateCRC32(data) {
 function createLocalFileHeader(fileName, fileSize, crc32) {
     const fileNameBytes = new TextEncoder().encode(fileName);
     const header = new Uint8Array(30 + fileNameBytes.length);
-    header.set([0x50, 0x4B, 0x03, 0x04], 0);
+    header.set([0x50, 0x4b, 0x03, 0x04], 0);
     header.set([0x14, 0x00], 4);
     header.set([0x00, 0x00], 6);
     header.set([0x00, 0x00], 8);
@@ -35,7 +35,7 @@ function createLocalFileHeader(fileName, fileSize, crc32) {
 function createCentralDirectoryHeader(fileName, fileSize, crc32, offset) {
     const fileNameBytes = new TextEncoder().encode(fileName);
     const header = new Uint8Array(46 + fileNameBytes.length);
-    header.set([0x50, 0x4B, 0x01, 0x02], 0);
+    header.set([0x50, 0x4b, 0x01, 0x02], 0);
     header.set([0x14, 0x00], 4);
     header.set([0x14, 0x00], 6);
     header.set([0x00, 0x00], 8);
@@ -57,7 +57,7 @@ function createCentralDirectoryHeader(fileName, fileSize, crc32, offset) {
 
 function createEndOfCentralDirectoryRecord(numFiles, centralDirSize, centralDirOffset) {
     const record = new Uint8Array(22);
-    record.set([0x50, 0x4B, 0x05, 0x06], 0);
+    record.set([0x50, 0x4b, 0x05, 0x06], 0);
     record.set([0x00, 0x00], 4);
     record.set([0x00, 0x00], 6);
     record.set(new Uint8Array(new Uint16Array([numFiles]).buffer), 8);
@@ -69,7 +69,7 @@ function createEndOfCentralDirectoryRecord(numFiles, centralDirSize, centralDirO
 }
 
 /**
- * 
+ *
  * @param {Array<{ data: Blob, title: string }>} files
  * @returns {Promise<Blob>}
  */

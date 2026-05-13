@@ -1,7 +1,7 @@
 /**
- * 
+ *
  * Navigation API not work on FireFox, so I have to override History API
- * 
+ *
  */
 (function () {
     let path = window.location.pathname;
@@ -12,12 +12,14 @@
     const dispatchPathChangeEvent = () => {
         const newPath = window.location.pathname;
         if (newPath !== path) {
-            window.dispatchEvent(new CustomEvent('pathChange', {
-                detail: {
-                    previousPath: path,
-                    currentPath: newPath
-                }
-            }));
+            window.dispatchEvent(
+                new CustomEvent('pathChange', {
+                    detail: {
+                        previousPath: path,
+                        currentPath: newPath,
+                    },
+                }),
+            );
             path = newPath;
         }
     };

@@ -3,13 +3,13 @@
  * But if the post is from a private profile, they add some extra stuff to the shortcode.
  * And I don't know how to convert between them.
  * So I wrote this to cache post id when user view post to reduce one api call.
- * 
+ *
  */
 navigation.addEventListener('navigate', (e) => {
     /**
      * Article element only avaiable right away when view post from /explore or from profile page
      * Otherwise Instagram wait until api call success and render it.
-    */
+     */
     const url = new URL(e.destination.url);
     let article = document.querySelector('article[role="presentation"]');
 
@@ -17,23 +17,26 @@ navigation.addEventListener('navigate', (e) => {
         const postInfo = getValueByKey(article, 'post');
         if (postInfo) {
             if (postInfo.id && postInfo.code) {
-                window.dispatchEvent(new CustomEvent('postView', {
-                    detail: {
-                        id: postInfo.id,
-                        code: postInfo.code
-                    }
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('postView', {
+                        detail: {
+                            id: postInfo.id,
+                            code: postInfo.code,
+                        },
+                    }),
+                );
             }
             stopObserve();
-        }
-        else {
+        } else {
             article = document.querySelector('article[role="presentation"]');
         }
     });
 
     function startObserve() {
         observer.observe(document.body, {
-            attributes: true, childList: true, subtree: true
+            attributes: true,
+            childList: true,
+            subtree: true,
         });
     }
 
@@ -43,8 +46,7 @@ navigation.addEventListener('navigate', (e) => {
 
     if (url.pathname.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
         startObserve();
-    }
-    else {
+    } else {
         stopObserve();
     }
 });

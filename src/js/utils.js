@@ -7,8 +7,9 @@ function saveFile(blob, fileName) {
 }
 
 function getCookieValue(name) {
-    return document.cookie.split('; ')
-        .find(row => row.startsWith(`${name}=`))
+    return document.cookie
+        .split('; ')
+        .find((row) => row.startsWith(`${name}=`))
         ?.split('=')[1];
 }
 
@@ -21,13 +22,13 @@ function getFetchOptions() {
             'x-ig-app-id': '936619743392459',
             'x-ig-www-claim': sessionStorage.getItem('www-claim-v2'),
             // 'x-instagram-ajax': '1006598911',
-            'x-requested-with': 'XMLHttpRequest'
+            'x-requested-with': 'XMLHttpRequest',
         },
         referrer: window.location.href,
         referrerPolicy: 'strict-origin-when-cross-origin',
         method: 'GET',
         mode: 'cors',
-        credentials: 'include'
+        credentials: 'include',
     };
 }
 
@@ -52,7 +53,7 @@ function getValueByKey(obj, key) {
         }
     }
     return null;
-};
+}
 
 function resetDownloadState() {
     const DOWNLOAD_BUTTON = document.querySelector('.download-button');
@@ -76,32 +77,34 @@ async function saveZip() {
     DOWNLOAD_BUTTON.classList.add('loading');
     DOWNLOAD_BUTTON.textContent = 'Loading...';
     DOWNLOAD_BUTTON.disabled = true;
-    const media = Array.from(document.querySelectorAll('.overlay.checked')).map(item => item.previousElementSibling);
+    const media = Array.from(document.querySelectorAll('.overlay.checked')).map((item) => item.previousElementSibling);
     const zipFileName = media[0].title.replaceAll(' | ', '_') + '.zip';
     async function fetchSelectedMedia() {
         let count = 0;
-        const results = await Promise.allSettled(media.map(async (media) => {
-            const res = await fetch(media.src);
-            const blob = await res.blob();
-            const data = {
-                title: media.title.replaceAll(' | ', '_'),
-                data: blob
-            };
-            data.title = media.nodeName === 'VIDEO' ? `${data.title}.mp4` : `${data.title}.jpeg`;
-            count++;
-            DOWNLOAD_BUTTON.textContent = `${count}/${media.length}`;
-            return data;
-        }));
-        results.forEach(promise => {
+        const results = await Promise.allSettled(
+            media.map(async (media) => {
+                const res = await fetch(media.src);
+                const blob = await res.blob();
+                const data = {
+                    title: media.title.replaceAll(' | ', '_'),
+                    data: blob,
+                };
+                data.title = media.nodeName === 'VIDEO' ? `${data.title}.mp4` : `${data.title}.jpeg`;
+                count++;
+                DOWNLOAD_BUTTON.textContent = `${count}/${media.length}`;
+                return data;
+            }),
+        );
+        results.forEach((promise) => {
             if (promise.status === 'rejected') throw new Error('Fail to fetch');
         });
-        return results.map(promise => promise.value);
+        return results.map((promise) => promise.value);
     }
     try {
         const media = await fetchSelectedMedia();
         const blob = await createZip(media);
         saveFile(blob, zipFileName);
-        document.querySelectorAll('.overlay').forEach(element => {
+        document.querySelectorAll('.overlay').forEach((element) => {
             element.classList.remove('checked');
         });
         resetDownloadState();
@@ -147,7 +150,9 @@ function setDownloadState(state = 'ready') {
             DOWNLOAD_BUTTON.disabled = true;
             MEDIA_CONTAINER.replaceChildren();
         },
-        fail() { resetDownloadState(); },
+        fail() {
+            resetDownloadState();
+        },
         success() {
             DOWNLOAD_BUTTON.disabled = false;
             appState.setPreviousValues();
@@ -157,17 +162,16 @@ function setDownloadState(state = 'ready') {
                 loadedPhotos++;
                 if (loadedPhotos === photosArray.length) resetDownloadState();
             }
-            photosArray.forEach(media => {
+            photosArray.forEach((media) => {
                 if (media.tagName === 'IMG') {
                     media.addEventListener('load', countLoaded);
                     media.addEventListener('error', countLoaded);
-                }
-                else {
+                } else {
                     media.addEventListener('loadeddata', countLoaded);
                     media.addEventListener('abort', countLoaded);
                 }
             });
-        }
+        },
     };
     options[state]();
 }
@@ -178,16 +182,20 @@ async function handleDownload() {
     const DISPLAY_CONTAINER = document.querySelector('.display-container');
     const option = shouldDownload();
     const totalItemChecked = Array.from(document.querySelectorAll('.overlay.checked'));
-    if (TITLE_CONTAINER.classList.contains('multi-select')
-        && !DISPLAY_CONTAINER.classList.contains('hide')
-        && option === 'none'
-        && totalItemChecked.length !== 0) {
+    if (
+        TITLE_CONTAINER.classList.contains('multi-select') &&
+        !DISPLAY_CONTAINER.classList.contains('hide') &&
+        option === 'none' &&
+        totalItemChecked.length !== 0
+    ) {
         return saveZip();
     }
-    requestAnimationFrame(() => { DISPLAY_CONTAINER.classList.remove('hide'); });
+    requestAnimationFrame(() => {
+        DISPLAY_CONTAINER.classList.remove('hide');
+    });
     if (option === 'none') return;
     setDownloadState('ready');
-    option === 'post' ? data = await downloadPostPhotos() : data = await downloadStoryPhotos(option);
+    option === 'post' ? (data = await downloadPostPhotos()) : (data = await downloadStoryPhotos(option));
     if (!data) return setDownloadState('fail');
     appState.currentDisplay = option;
     renderMedia(data);
@@ -200,22 +208,21 @@ function renderMedia(data) {
     if (!data) return;
     const fragment = document.createDocumentFragment();
     const date = new Date(data.date * 1000).toISOString().split('T')[0];
-    data.media.forEach(item => {
+    data.media.forEach((item) => {
         const attributes = {
             class: 'media-item',
             src: item.url,
             title: `${data.user.username} | ${item.id} | ${date}`,
-            controls: ''
+            controls: '',
         };
-        const ITEM_TEMPLATE =
-            `<div>
+        const ITEM_TEMPLATE = `<div>
 				${item.isVideo ? `<video></video>` : '<img/>'}
 				<div class="overlay">✔</div>
 			</div>`;
         const itemDOM = new DOMParser().parseFromString(ITEM_TEMPLATE, 'text/html').body.firstElementChild;
         const media = itemDOM.querySelector('img, video');
         const selectBox = itemDOM.querySelector('.overlay');
-        Object.keys(attributes).forEach(key => {
+        Object.keys(attributes).forEach((key) => {
             if (item.isVideo) media.setAttribute(key, attributes[key]);
             else if (key !== 'controls') media.setAttribute(key, attributes[key]);
         });
@@ -223,8 +230,7 @@ function renderMedia(data) {
             if (TITLE_CONTAINER.classList.contains('multi-select')) {
                 if (item.isVideo) e.preventDefault();
                 selectBox.classList.toggle('checked');
-            }
-            else saveMedia(media, media.title.replaceAll(' | ', '_') + `${item.isVideo ? '.mp4' : '.jpeg'}`);
+            } else saveMedia(media, media.title.replaceAll(' | ', '_') + `${item.isVideo ? '.mp4' : '.jpeg'}`);
         });
         fragment.appendChild(itemDOM);
     });
@@ -244,10 +250,14 @@ function handleLongClick(element, shortClickHandler, longClickHandler, delay = 4
                 longClickHandler();
             }
         }, 10);
-        element.addEventListener('mouseup', () => {
-            clearInterval(intervalId);
-            if (count < delay) shortClickHandler();
-        }, { once: true });
+        element.addEventListener(
+            'mouseup',
+            () => {
+                clearInterval(intervalId);
+                if (count < delay) shortClickHandler();
+            },
+            { once: true },
+        );
     });
 }
 

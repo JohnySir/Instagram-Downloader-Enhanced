@@ -11,12 +11,14 @@ navigation.addEventListener('navigate', (e) => {
             const username = getValueByKey(section, 'username');
             const userId = getValueByKey(section, 'userId');
             if (username && userId)
-                window.dispatchEvent(new CustomEvent('userLoad', {
-                    detail: {
-                        username: username,
-                        id: userId
-                    }
-                }));
+                window.dispatchEvent(
+                    new CustomEvent('userLoad', {
+                        detail: {
+                            username: username,
+                            id: userId,
+                        },
+                    }),
+                );
         }, 0);
     }
 });

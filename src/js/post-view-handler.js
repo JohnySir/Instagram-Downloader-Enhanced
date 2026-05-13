@@ -9,7 +9,7 @@
  * But if the post is from a private profile, they add some extra stuff to the shortcode.
  * And I don't know how to convert between them.
  * So I wrote this to cache post id when user view post to reduce one api call.
- * 
+ *
  * Why the hell I need to match post info api or comments api instead of just one?
  * The reason is post info api only load when you view post from home or /explore.
  * If you view post from user profile page, it not gonna call post info, instead it call post comments api
@@ -21,7 +21,6 @@
     const performanceObserver = new PerformanceObserver((list) => {
         const entries = list.getEntriesByType('resource');
         entries.forEach((entry) => {
-
             const entryPath = new URL(entry.name).pathname;
             const currentPath = window.location.pathname;
 
@@ -36,11 +35,9 @@
                 if (matchPostCommentApi) pk = matchPostCommentApi[1];
 
                 // Check Valid pk and code
-                if (shortcode.startsWith(convertToShortcode(pk)) &&
-                    !appCache.postIdInfoCache.has(shortcode)) {
+                if (shortcode.startsWith(convertToShortcode(pk)) && !appCache.postIdInfoCache.has(shortcode)) {
                     appCache.postIdInfoCache.set(shortcode, pk);
                 }
-
             }
         });
     });

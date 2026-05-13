@@ -59,8 +59,7 @@ async function downloadStoryPhotos(type = 'stories') {
     if (type === 'highlights') {
         if (!appState.current.highlights) return null;
         json = await getHighlightStory(appState.current.highlights);
-    }
-    else {
+    } else {
         const userId = await getUserId(appState.current.username);
         if (!userId) return null;
         json = await getStoryPhotos(userId);
@@ -71,7 +70,7 @@ async function downloadStoryPhotos(type = 'stories') {
         user: {
             username: json.user['username'],
         },
-        media: []
+        media: [],
     };
     json.items.forEach((item) => {
         const isVideo = item['media_type'] !== 1;
@@ -83,7 +82,7 @@ async function downloadStoryPhotos(type = 'stories') {
         const media = {
             url: largestMediaItem.url,
             isVideo: isVideo,
-            id: item.pk
+            id: item.pk,
         };
         data.media.push(media);
     });

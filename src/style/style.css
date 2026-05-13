@@ -8,7 +8,7 @@
 
 .display-container {
     background: white;
-    width: calc(80vh /5*3);
+    width: calc(80vh / 5 * 3);
     height: 75vh;
     max-width: 480px;
     max-height: 800px;
@@ -22,9 +22,12 @@
     -webkit-user-select: none;
     transform-origin: center center;
     transform: scale(1);
-    transition: transform 0.5s cubic-bezier(0.82, -0.07, 0.25, 1.08), opacity 0.4s ease-in-out, transform-origin 0.5s ease-in-out;
+    transition:
+        transform 0.5s cubic-bezier(0.82, -0.07, 0.25, 1.08),
+        opacity 0.4s ease-in-out,
+        transform-origin 0.5s ease-in-out;
     will-change: transform, transform-origin, opacity;
-    box-shadow: 0 4px 12px rgba(var(--web-always-black), .15);
+    box-shadow: 0 4px 12px rgba(var(--web-always-black), 0.15);
     z-index: 1000000;
 }
 
@@ -39,7 +42,7 @@
     opacity: 0.6;
 }
 
-.display-container>.title-container {
+.display-container > .title-container {
     width: inherit;
     height: 8%;
     max-width: inherit;
@@ -57,7 +60,7 @@
     cursor: pointer;
 }
 
-.display-container>.title-container.dark {
+.display-container > .title-container.dark {
     background-color: rgba(var(--ig-primary-background), 0.8);
 }
 
@@ -73,12 +76,12 @@
     opacity: 0.8;
 }
 
-.display-container>.media-container {
+.display-container > .media-container {
     width: inherit;
     height: inherit;
     max-width: inherit;
     max-height: inherit;
-    padding-top: calc(8% /3*5);
+    padding-top: calc(8% / 3 * 5);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -87,7 +90,7 @@
 }
 
 .media-container:empty::after {
-    content: "";
+    content: '';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -100,11 +103,11 @@
     transform: translate(-50%, -50%);
 }
 
-.display-container>.media-container::-webkit-scrollbar {
+.display-container > .media-container::-webkit-scrollbar {
     display: none;
 }
 
-.display-container>.media-container>div {
+.display-container > .media-container > div {
     position: relative;
     width: 90%;
     height: fit-content;
@@ -113,11 +116,11 @@
     transition-property: width, height, scale;
 }
 
-.display-container>.media-container>div:hover {
+.display-container > .media-container > div:hover {
     scale: 1.01;
 }
 
-.display-container>.media-container>div>.overlay {
+.display-container > .media-container > div > .overlay {
     background: rgba(0, 0, 0, 0.5);
     pointer-events: none;
     position: absolute;
@@ -132,25 +135,25 @@
     transition: 0.1s;
 }
 
-.display-container>.media-container>div>.overlay>svg {
+.display-container > .media-container > div > .overlay > svg {
     display: none;
 }
 
-.display-container>.media-container>div>.overlay.show {
+.display-container > .media-container > div > .overlay.show {
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 0px;
 }
 
-.display-container>.media-container>div>.overlay.checked {
+.display-container > .media-container > div > .overlay.checked {
     border-color: black;
     background: white;
     font-size: 20px;
     color: black;
 }
 
-.display-container>.media-container>div>.media-item {
+.display-container > .media-container > div > .media-item {
     position: relative;
     width: 100%;
     cursor: pointer;
@@ -188,7 +191,7 @@
 }
 
 /* Support bottom navigation */
-@media (max-width:767px) {
+@media (max-width: 767px) {
     .download-button {
         display: flex;
         align-items: center;

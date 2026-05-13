@@ -20,7 +20,7 @@ function getValueByKey(obj, key) {
         }
     }
     return null;
-};
+}
 
 function getAllValuesByKey(obj, targetKey) {
     if (typeof obj !== 'object' || obj === null) return [];
@@ -41,4 +41,4 @@ function getAllValuesByKey(obj, targetKey) {
         }
     }
     return values;
-};
+}
