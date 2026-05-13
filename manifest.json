@@ -37,7 +37,6 @@
             ],
             "js": [
                 "src/js/global/utils.js",
-                "src/js/global/event.js",
                 "src/js/global/home-scroll-handler.js",
                 "src/js/global/stories-view-handler.js",
                 "src/js/global/post-modal-view-handler.js",
