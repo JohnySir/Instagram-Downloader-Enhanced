@@ -17,8 +17,17 @@ This extension should work fine on the following browsers with `fetch()` API and
 ## Download and install
 
 - Download [latest version](https://github.com/HOAIAN2/Instagram-Downloader/releases) and extract to a folder
+
+### Chrome or other Chromium browsers
+
 - Enable Chrome extensions developer mode
 - Drag and drop extracted folder to `chrome://extensions/`
+
+### Firefox (Development)
+
+- Go to Add-ons Manager `about:addons`
+- Click on Setting > Debug Add-ons
+- Click on `Load Temporary Add-on...` and select the `manifest.json` file
 
 ## Usage
 
