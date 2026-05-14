@@ -343,7 +343,6 @@ const appState = Object.freeze(
             // Check valid shortcode
             if (e.detail.code.startsWith(convertToShortcode(e.detail.id))) {
                 appCache.postIdInfoCache.set(e.detail.code, e.detail.id);
-                // console.log(e.detail);
             }
         });
         setTheme();
