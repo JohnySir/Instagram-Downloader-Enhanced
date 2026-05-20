@@ -126,17 +126,17 @@ const appState = Object.freeze(
         document.body.appendChild(
             createElement(
                 `<div class="display-container hide">
-                <div class="title-container">
-                    <span title="${APP_NAME}">Media</span>
-                    <button class="esc-button">&times</button>
+                    <div class="title-container">
+                        <span title="${APP_NAME}">Media</span>
+                        <button class="esc-button">&times</button>
+                    </div>
+                    <div class="media-container">
+                        <p style="position: absolute;top: 50%;transform: translate(0%, -50%);">
+                            Nothing to download
+                        </p>
+                    </div>
                 </div>
-                <div class="media-container">
-                    <p style="position: absolute;top: 50%;transform: translate(0%, -50%);">
-                        Nothing to download
-                    </p>
-                </div>
-            </div>
-            <button title="Shift+D" class="download-button">Download</button>`,
+                <button title="Shift+D" class="download-button">Download</button>`,
             ),
         );
     }
