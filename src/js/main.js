@@ -146,9 +146,9 @@ const appState = Object.freeze(
         const DISPLAY_CONTAINER = document.querySelector('.display-container');
         const DOWNLOAD_BUTTON = document.querySelector('.download-button');
         const IGNORE_FOCUS_ELEMENTS = ['INPUT', 'TEXTAREA'];
-        const ESC_EVENT_KEYS = ['Escape', 'C', 'c'];
+        const ESC_EVENT_KEYS = ['Escape', 'C'];
         const DOWNLOAD_EVENT_KEYS = ['D'];
-        const SELECT_EVENT_KEYS = ['S', 's'];
+        const SELECT_EVENT_KEYS = ['S'];
         function setTheme() {
             const isDarkMode =
                 localStorage.getItem('igt') === null
