@@ -278,6 +278,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 <div align="center">
 
-Built on 💜 by **[hoaianle](https://github.com/hoaianle/Instagram-Downloader)** · Enhanced in V4 with ⚡ by **Johny**
+Built on 💜 by **[hoaianle](https://github.com/hoaianle/Instagram-Downloader)** · Enhanced with ⚡ by **Johny**
 
 </div>
