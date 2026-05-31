@@ -1,7 +1,7 @@
 <div align="center">
 
 # 📸 Instagram Downloader Enhanced
-### Version 4 — by hoaianle × Custom Enhancements
+### Version 4 — by hoaianle × My Custom Enhancements
 
 ![Version](https://img.shields.io/badge/Version-4.0-blueviolet?style=for-the-badge&logo=github)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge&logo=googlechrome)
