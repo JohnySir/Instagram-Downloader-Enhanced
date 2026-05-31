@@ -92,7 +92,7 @@ Click the **extension icon** in your browser toolbar to open the Settings popup.
 
 ---
 
-## 🚀 Installation Guide (Beginner Friendly)
+## 🚀 Installation Guide
 
 > [!NOTE]
 > You do **not** need to install anything from a web store. You load it directly from the folder on your computer. This is called "Developer Mode" loading — don't worry, it's totally safe and easy!
