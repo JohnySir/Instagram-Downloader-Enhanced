@@ -128,7 +128,11 @@ const appState = Object.freeze(
                 `<div class="display-container hide">
                     <div class="title-container">
                         <span title="${APP_NAME}">Media</span>
-                        <button class="esc-button">&times</button>
+                        <div style="display: flex; align-items: center;">
+                            <button class="download-all-button" title="Download All">⬇</button>
+                            <button class="lock-button">🔒</button>
+                            <button class="esc-button">&times</button>
+                        </div>
                     </div>
                     <div class="media-container">
                         <p style="position: absolute;top: 50%;transform: translate(0%, -50%);">
@@ -145,10 +149,17 @@ const appState = Object.freeze(
         const TITLE_CONTAINER = document.querySelector('.title-container').firstElementChild;
         const DISPLAY_CONTAINER = document.querySelector('.display-container');
         const DOWNLOAD_BUTTON = document.querySelector('.download-button');
+        const LOCK_BUTTON = document.querySelector('.lock-button');
+        const DOWNLOAD_ALL_BUTTON = document.querySelector('.download-all-button');
         const IGNORE_FOCUS_ELEMENTS = ['INPUT', 'TEXTAREA'];
         const ESC_EVENT_KEYS = ['Escape', 'C'];
         const DOWNLOAD_EVENT_KEYS = ['D'];
         const SELECT_EVENT_KEYS = ['S'];
+        // --- Drag state ---
+        let isDragging = false;
+        let hasMoved = false;
+        let startX, startY;
+        let startLeft, startTop;
         function setTheme() {
             const isDarkMode =
                 localStorage.getItem('igt') === null
@@ -271,8 +282,122 @@ const appState = Object.freeze(
             childList: true,
             subtree: true,
         });
+        // --- Lock button helpers ---
+        function updateLockButton(isLocked) {
+            LOCK_BUTTON.textContent = isLocked ? '🔒' : '🔓';
+            if (isLocked) {
+                DOWNLOAD_BUTTON.style.cursor = 'pointer';
+            } else {
+                DOWNLOAD_BUTTON.style.cursor = 'move';
+            }
+        }
+        // --- Load saved position and lock state ---
+        function loadButtonPosition() {
+            chrome.storage.local.get(['download_button_pos', 'download_button_locked'], (res) => {
+                const pos = res.download_button_pos;
+                if (pos) {
+                    DOWNLOAD_BUTTON.style.left = pos.left;
+                    DOWNLOAD_BUTTON.style.top = pos.top;
+                    DOWNLOAD_BUTTON.style.right = 'auto';
+                    DOWNLOAD_BUTTON.style.bottom = 'auto';
+                }
+                const isLocked = res.download_button_locked !== false;
+                updateLockButton(isLocked);
+            });
+        }
         ESC_BUTTON.addEventListener('click', () => {
             DISPLAY_CONTAINER.classList.add('hide');
+        });
+        LOCK_BUTTON.addEventListener('click', () => {
+            const isLocked = LOCK_BUTTON.textContent === '🔓';
+            chrome.storage.local.set({ 'download_button_locked': isLocked });
+            updateLockButton(isLocked);
+        });
+        DOWNLOAD_ALL_BUTTON.addEventListener('click', downloadAll);
+        // --- Drag listeners ---
+        DOWNLOAD_BUTTON.addEventListener('mousedown', (e) => {
+            chrome.storage.local.get('download_button_locked', (res) => {
+                if (res.download_button_locked === false) {
+                    isDragging = true;
+                    hasMoved = false;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    const rect = DOWNLOAD_BUTTON.getBoundingClientRect();
+                    startLeft = rect.left;
+                    startTop = rect.top;
+                    DOWNLOAD_BUTTON.style.transition = 'none';
+                    DOWNLOAD_BUTTON.style.cursor = 'grabbing';
+                    e.preventDefault();
+                }
+            });
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                if (!hasMoved && (Math.abs(dx) > 5 || Math.abs(dy) > 5)) {
+                    hasMoved = true;
+                }
+                const newLeft = startLeft + dx;
+                const newTop = startTop + dy;
+                DOWNLOAD_BUTTON.style.left = `${newLeft}px`;
+                DOWNLOAD_BUTTON.style.top = `${newTop}px`;
+                DOWNLOAD_BUTTON.style.right = 'auto';
+                DOWNLOAD_BUTTON.style.bottom = 'auto';
+            }
+        });
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                DOWNLOAD_BUTTON.style.cursor = 'move';
+                const rect = DOWNLOAD_BUTTON.getBoundingClientRect();
+                const finalLeft = Math.round(rect.left);
+                const finalTop = Math.round(rect.top);
+                DOWNLOAD_BUTTON.style.left = `${finalLeft}px`;
+                DOWNLOAD_BUTTON.style.top = `${finalTop}px`;
+                // Re-enable transition after the next paint to avoid snapping
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        DOWNLOAD_BUTTON.style.transition = 'background-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease';
+                    });
+                });
+                chrome.storage.local.set({
+                    'download_button_pos': {
+                        left: `${finalLeft}px`,
+                        top: `${finalTop}px`
+                    }
+                });
+            }
+        });
+        // Click guard — prevents click from firing after a drag
+        DOWNLOAD_BUTTON.addEventListener('click', (e) => {
+            if (hasMoved) {
+                e.stopImmediatePropagation();
+                hasMoved = false;
+                return;
+            }
+        }, true);
+        // --- RESET_POSITION message from popup ---
+        chrome.runtime.onMessage.addListener((request) => {
+            if (request.action === "RESET_POSITION") {
+                DOWNLOAD_BUTTON.style.left = '';
+                DOWNLOAD_BUTTON.style.top = '';
+                DOWNLOAD_BUTTON.style.right = '';
+                DOWNLOAD_BUTTON.style.bottom = '';
+                const rect = DOWNLOAD_BUTTON.getBoundingClientRect();
+                const centerX = (window.innerWidth / 2) - (rect.width / 2);
+                const centerY = (window.innerHeight / 2) - (rect.height / 2);
+                DOWNLOAD_BUTTON.style.left = `${Math.round(centerX)}px`;
+                DOWNLOAD_BUTTON.style.top = `${Math.round(centerY)}px`;
+                DOWNLOAD_BUTTON.style.right = 'auto';
+                DOWNLOAD_BUTTON.style.bottom = 'auto';
+                chrome.storage.local.set({
+                    'download_button_pos': {
+                        left: DOWNLOAD_BUTTON.style.left,
+                        top: DOWNLOAD_BUTTON.style.top
+                    }
+                });
+            }
         });
         window.addEventListener('keydown', (e) => {
             if (window.location.pathname.startsWith('/direct')) return;
@@ -328,9 +453,9 @@ const appState = Object.freeze(
                 currentPath.match(IG_STORY_REGEX) ||
                 currentPath.match(IG_HIGHLIGHT_REGEX)
             ) {
-                DOWNLOAD_BUTTON.setAttribute('style', 'z-index: 1000000;');
+                DOWNLOAD_BUTTON.style.zIndex = '1000000';
             } else {
-                DOWNLOAD_BUTTON.removeAttribute('style');
+                DOWNLOAD_BUTTON.style.zIndex = '';
             }
         });
         window.addEventListener('userLoad', (e) => {
@@ -351,6 +476,7 @@ const appState = Object.freeze(
             DOWNLOAD_BUTTON.setAttribute('hidden', 'true');
             DISPLAY_CONTAINER.classList.add('hide');
         }
+        loadButtonPosition();
     }
     function run() {
         document.querySelectorAll('.display-container, .download-button').forEach((node) => {

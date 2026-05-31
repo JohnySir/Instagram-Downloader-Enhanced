@@ -190,9 +190,30 @@ async function handleDownload() {
     ) {
         return saveZip();
     }
-    requestAnimationFrame(() => {
-        DISPLAY_CONTAINER.classList.remove('hide');
-    });
+    const DOWNLOAD_BUTTON = document.querySelector('.download-button');
+    const rect = DOWNLOAD_BUTTON.getBoundingClientRect();
+    const estimatedHeight = Math.min(window.innerHeight * 0.75, 800);
+    const containerWidth = Math.min(window.innerHeight * 0.8 / 5 * 3, 480);
+    let bottom = window.innerHeight - rect.top + 10;
+    let right = window.innerWidth - rect.right;
+
+    if (rect.top - estimatedHeight - 20 < 0) {
+        bottom = window.innerHeight - rect.bottom - estimatedHeight - 10;
+        DISPLAY_CONTAINER.style.transformOrigin = '85% top';
+    } else {
+        DISPLAY_CONTAINER.style.transformOrigin = '85% bottom';
+    }
+
+    // Constraints — keep panel within viewport
+    if (bottom < 10) bottom = 10;
+    if (bottom + estimatedHeight > window.innerHeight) bottom = window.innerHeight - estimatedHeight - 10;
+    if (right < 10) right = 10;
+    if (right + containerWidth > window.innerWidth) right = window.innerWidth - containerWidth - 10;
+
+    DISPLAY_CONTAINER.style.bottom = `${bottom}px`;
+    DISPLAY_CONTAINER.style.right = `${right}px`;
+
+    requestAnimationFrame(() => { DISPLAY_CONTAINER.classList.remove('hide'); });
     if (option === 'none') return;
     setDownloadState('ready');
     option === 'post' ? (data = await downloadPostPhotos()) : (data = await downloadStoryPhotos(option));
@@ -267,5 +288,56 @@ function isValidJson(string) {
         return true;
     } catch {
         return false;
+    }
+}
+
+async function downloadAll() {
+    const DOWNLOAD_ALL_BTN = document.querySelector('.download-all-button');
+    const DOWNLOAD_BUTTON = document.querySelector('.download-button');
+    const MEDIA_CONTAINER = document.querySelector('.media-container');
+    const mediaItems = Array.from(MEDIA_CONTAINER.querySelectorAll('img.media-item, video.media-item'));
+
+    if (mediaItems.length === 0) return;
+
+    DOWNLOAD_ALL_BTN.disabled = true;
+
+    // Single item — just download it directly
+    if (mediaItems.length === 1) {
+        const media = mediaItems[0];
+        const ext = media.tagName === 'VIDEO' ? '.mp4' : '.jpeg';
+        await saveMedia(media, media.title.replaceAll(' | ', '_') + ext);
+        DOWNLOAD_ALL_BTN.disabled = false;
+        return;
+    }
+
+    // Multiple items — bundle into ZIP
+    DOWNLOAD_BUTTON.classList.add('loading');
+    DOWNLOAD_BUTTON.textContent = 'Loading...';
+    DOWNLOAD_BUTTON.disabled = true;
+
+    const zipFileName = mediaItems[0].title.replaceAll(' | ', '_') + '_all.zip';
+    let count = 0;
+
+    try {
+        const results = await Promise.allSettled(mediaItems.map(async (media) => {
+            const res = await fetch(media.src);
+            const blob = await res.blob();
+            const ext = media.tagName === 'VIDEO' ? '.mp4' : '.jpeg';
+            const title = media.title.replaceAll(' | ', '_') + ext;
+            count++;
+            DOWNLOAD_BUTTON.textContent = `${count}/${mediaItems.length}`;
+            return { title, data: blob };
+        }));
+
+        if (results.some(r => r.status === 'rejected')) throw new Error('Some downloads failed');
+
+        const files = results.map(r => r.value);
+        const blob = await createZip(files);
+        saveFile(blob, zipFileName);
+    } catch (error) {
+        console.log(error);
+    } finally {
+        DOWNLOAD_ALL_BTN.disabled = false;
+        resetDownloadState();
     }
 }

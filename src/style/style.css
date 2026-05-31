@@ -72,8 +72,33 @@
     cursor: pointer;
 }
 
-.esc-button:hover {
+.esc-button:hover, .lock-button:hover, .download-all-button:hover {
     opacity: 0.8;
+}
+
+.lock-button {
+    font-size: min(24px, 3vh);
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.download-all-button {
+    font-size: min(20px, 2.8vh);
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin-right: 10px;
+    line-height: 1;
+    padding: 0;
+}
+
+.download-all-button:disabled {
+    opacity: 0.35;
+    cursor: default;
 }
 
 .display-container > .media-container {

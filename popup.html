@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 200px;
+            padding: 16px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            background-color: #ffffff;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+        h2 {
+            font-size: 16px;
+            margin: 0;
+            color: #262626;
+        }
+        .reset-btn {
+            width: 100%;
+            padding: 8px 16px;
+            background-color: #0095f6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .reset-btn:hover {
+            background-color: #1877f2;
+        }
+        .reset-btn:active {
+            opacity: 0.8;
+        }
+        .info {
+            font-size: 11px;
+            color: #8e8e8e;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Settings</h2>
+        <button id="resetPosition" class="reset-btn">Reset Button Position</button>
+        <div class="info">Moves the download button to the center of the screen.</div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

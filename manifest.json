@@ -1,5 +1,5 @@
 {
-    "name": "Instagram Downloader",
+    "name": "Instagram Downloader V4.1",
     "description": "Download Photos and Videos from Instagram Post, Reels, TV, Stories",
     "version": "5.1.15",
     "manifest_version": 3,
@@ -10,8 +10,10 @@
         "128": "icons/icon128.png"
     },
     "host_permissions": ["https://www.instagram.com/*"],
+    "permissions": ["storage"],
     "action": {
-        "default_icon": "icons/icon128.png"
+        "default_icon": "icons/icon128.png",
+        "default_popup": "popup.html"
     },
     "content_scripts": [
         {
