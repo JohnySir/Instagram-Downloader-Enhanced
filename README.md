@@ -3,7 +3,7 @@
 # 📸 Instagram Downloader Enhanced
 ### Version 4 — by hoaianle × Custom Enhancements
 
-![Version](https://img.shields.io/badge/Version-4.0-blueviolet?style=for-the-badge&logo=github)
+![Version](https://img.shields.io/badge/Version-4.2-blueviolet?style=for-the-badge&logo=github)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge&logo=googlechrome)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Browser-Chrome%20%2F%20Edge-orange?style=for-the-badge&logo=googlechrome)
