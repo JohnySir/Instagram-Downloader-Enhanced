@@ -5,36 +5,42 @@
  * So I wrote this to cache post id when user view post to reduce one api call.
  *
  */
-navigation.addEventListener('navigate', (e) => {
-    /**
-     * Article element only avaiable right away when view post from /explore or from profile page
-     * Otherwise Instagram wait until api call success and render it.
-     */
-    const url = new URL(e.destination.url);
-    let article = document.querySelector('article[role="presentation"]');
+(() => {
+    function debounce(func, delay) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                func(...args);
+            }, delay);
+        };
+    }
 
-    const observer = new MutationObserver(() => {
-        const postInfo = getValueByKey(article, 'post');
-        if (postInfo) {
-            if (postInfo.id && postInfo.code) {
-                window.dispatchEvent(
-                    new CustomEvent('postView', {
-                        detail: {
-                            id: postInfo.id,
-                            code: postInfo.code,
-                        },
-                    }),
-                );
+    const handleMutation = debounce(() => {
+        let article = document.querySelector('article[role="presentation"]');
+        if (article) {
+            const postInfo = getValueByKey(article, 'post');
+            if (postInfo) {
+                if (postInfo.id && postInfo.code) {
+                    window.dispatchEvent(
+                        new CustomEvent('postView', {
+                            detail: {
+                                id: postInfo.id,
+                                code: postInfo.code,
+                            },
+                        }),
+                    );
+                }
+                stopObserve();
             }
-            stopObserve();
-        } else {
-            article = document.querySelector('article[role="presentation"]');
         }
-    });
+    }, 100);
+
+    const observer = new MutationObserver(handleMutation);
 
     function startObserve() {
+        stopObserve();
         observer.observe(document.body, {
-            attributes: true,
             childList: true,
             subtree: true,
         });
@@ -44,9 +50,17 @@ navigation.addEventListener('navigate', (e) => {
         observer.disconnect();
     }
 
-    if (url.pathname.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
+    navigation.addEventListener('navigate', (e) => {
+        const url = new URL(e.destination.url);
+        if (url.pathname.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
+            startObserve();
+        } else {
+            stopObserve();
+        }
+    });
+
+    // Check on initial load
+    if (window.location.pathname.match(/\/(p|tv|reel|reels)\/([A-Za-z0-9_-]*)(\/?)/)) {
         startObserve();
-    } else {
-        stopObserve();
     }
-});
+})();

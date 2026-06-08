@@ -60,6 +60,7 @@ const appState = Object.freeze(
                     return current.shortcode;
                 },
                 set shortcode(value) {
+                    if (value === current.shortcode) return;
                     current.shortcode = value;
                     downloadPostPhotos().then((data) => {
                         renderMedia(data);
@@ -70,6 +71,7 @@ const appState = Object.freeze(
                     return current.username;
                 },
                 set username(value) {
+                    if (value === current.username) return;
                     current.username = value;
                     downloadStoryPhotos('stories').then((data) => {
                         renderMedia(data);
@@ -80,6 +82,7 @@ const appState = Object.freeze(
                     return current.highlights;
                 },
                 set highlights(value) {
+                    if (value === current.highlights) return;
                     current.highlights = value;
                     downloadStoryPhotos('highlights').then((data) => {
                         renderMedia(data);
@@ -229,34 +232,37 @@ const appState = Object.freeze(
         }
         function handleChatTab() {
             const reactRoot = document.body.querySelector('[id]');
-            const rootObserver = new MutationObserver(() => {
+            if (!reactRoot) return;
+
+            const updateVisibility = debounce(() => {
                 const chatTabsRootContent = document.querySelector('[data-pagelet="IGDChatTabsRootContent"]');
                 if (!chatTabsRootContent) {
+                    showExtension();
                     return;
                 }
-                const tabChatWrapper = chatTabsRootContent.querySelector('[data-visualcompletion="ignore"]')
-                    .childNodes[0];
+                const visualCompletionIgnore = chatTabsRootContent.querySelector('[data-visualcompletion="ignore"]');
+                if (!visualCompletionIgnore || !visualCompletionIgnore.childNodes[0]) {
+                    showExtension();
+                    return;
+                }
+
+                const tabChatWrapper = visualCompletionIgnore.childNodes[0];
                 if (tabChatWrapper.childNodes.length > 1) {
-                    // This tab will show when you click on Message button
                     const actualTabChat = tabChatWrapper.lastChild;
-                    // This tab will show when you view someone story and click on avatar on Message button
                     const singleTabChat = actualTabChat.querySelector('[aria-label]');
 
-                    if (
-                        actualTabChat.checkVisibility({ checkVisibilityCSS: true }) ||
-                        singleTabChat.checkVisibility({ checkVisibilityCSS: true })
-                    ) {
-                        hideExtension();
-                    } else {
-                        showExtension();
-                    }
+                    const isVisible = (actualTabChat && actualTabChat.checkVisibility({ checkVisibilityCSS: true })) ||
+                                      (singleTabChat && singleTabChat.checkVisibility({ checkVisibilityCSS: true }));
+
+                    if (isVisible) hideExtension();
+                    else showExtension();
                 } else {
                     showExtension();
                 }
-            });
+            }, 200);
 
+            const rootObserver = new MutationObserver(updateVisibility);
             rootObserver.observe(reactRoot, {
-                // attributes: true,
                 childList: true,
                 subtree: true,
             });
@@ -305,15 +311,41 @@ const appState = Object.freeze(
                 updateLockButton(isLocked);
             });
         }
-        ESC_BUTTON.addEventListener('click', () => {
+        ESC_BUTTON.addEventListener('click', (e) => {
+            e.stopPropagation();
             DISPLAY_CONTAINER.classList.add('hide');
+            pauseVideo();
         });
-        LOCK_BUTTON.addEventListener('click', () => {
+
+        // --- Click outside to close ---
+        const handleClickOutside = (e) => {
+            if (DISPLAY_CONTAINER.classList.contains('hide')) return;
+            // Ignore programmatic clicks from saveFile or elements not in DOM
+            if (!e.target.isConnected) return; 
+            
+            if (DISPLAY_CONTAINER.contains(e.target)) return;
+            if (DOWNLOAD_BUTTON.contains(e.target)) return;
+
+            DISPLAY_CONTAINER.classList.add('hide');
+            pauseVideo();
+        };
+
+        // Prevent duplicate listeners if script is re-injected
+        if (window.__handleClickOutside) {
+            document.removeEventListener('click', window.__handleClickOutside);
+        }
+        window.__handleClickOutside = handleClickOutside;
+        document.addEventListener('click', window.__handleClickOutside);
+        LOCK_BUTTON.addEventListener('click', (e) => {
+            e.stopPropagation();
             const isLocked = LOCK_BUTTON.textContent === '🔓';
             chrome.storage.local.set({ 'download_button_locked': isLocked });
             updateLockButton(isLocked);
         });
-        DOWNLOAD_ALL_BUTTON.addEventListener('click', downloadAll);
+        DOWNLOAD_ALL_BUTTON.addEventListener('click', (e) => {
+            e.stopPropagation();
+            downloadAll();
+        });
         // --- Drag listeners ---
         DOWNLOAD_BUTTON.addEventListener('mousedown', (e) => {
             chrome.storage.local.get('download_button_locked', (res) => {

@@ -1,7 +1,7 @@
 <div align="center">
 
 # 📸 Instagram Downloader Enhanced
-### Version 4 — by hoaianle × My Custom Enhancements
+### Version 4 — by hoaianle × Custom Enhancements
 
 ![Version](https://img.shields.io/badge/Version-4.0-blueviolet?style=for-the-badge&logo=github)
 ![Manifest](https://img.shields.io/badge/Manifest-V3-blue?style=for-the-badge&logo=googlechrome)
@@ -92,7 +92,7 @@ Click the **extension icon** in your browser toolbar to open the Settings popup.
 
 ---
 
-## 🚀 Installation Guide
+## 🚀 Installation Guide (Beginner Friendly)
 
 > [!NOTE]
 > You do **not** need to install anything from a web store. You load it directly from the folder on your computer. This is called "Developer Mode" loading — don't worry, it's totally safe and easy!
@@ -278,6 +278,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 
 <div align="center">
 
-Built on 💜 by **[hoaianle](https://github.com/hoaianle/Instagram-Downloader)** · Enhanced with ⚡ by **Johny**
+Built on 💜 by **[hoaianle](https://github.com/hoaianle/Instagram-Downloader)** · Enhanced in V4 with ⚡ by **Johny**
 
 </div>

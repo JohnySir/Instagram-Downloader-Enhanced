@@ -8,6 +8,7 @@
             }, delay);
         };
     }
+    let lastShortcode = '';
     const homeScrollHandler = debounce(
         () => {
             function getVisibleArea(element) {
@@ -29,7 +30,8 @@
 
             if (mostVisibleElement) {
                 const mediaFragmentKey = getValueByKey(mostVisibleElement, 'queryReference');
-                if (mediaFragmentKey) {
+                if (mediaFragmentKey && mediaFragmentKey.code !== lastShortcode) {
+                    lastShortcode = mediaFragmentKey.code;
                     window.dispatchEvent(
                         new CustomEvent('shortcodeChange', {
                             detail: {
@@ -58,7 +60,6 @@
         const mainNode = document.querySelector('main');
         if (mainNode)
             observer.observe(mainNode, {
-                attributes: true,
                 childList: true,
                 subtree: true,
             });
@@ -70,7 +71,7 @@
     }
     navigation.addEventListener('navigate', (e) => {
         const url = new URL(e.destination.url);
-        if (url.pathname.startsWith === '/') startObserve();
+        if (url.pathname === '/') startObserve();
         else stopObserve();
     });
     if (window.location.pathname === '/') startObserve();
